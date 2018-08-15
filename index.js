@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const Users = require('./db.js').Users;
 const getTweets = require('./tweets.js');
+const scrapeReplies = require('./config/awsURLs.js');
 const port = process.env.PORT || 3001;
 
 // Load the AWS SDK for Node.js
@@ -55,13 +56,13 @@ app.get('/tweets/:userId/:viewerId', async (req, res) => {
         let params = {
           DelaySeconds: 10,
           MessageBody: message,
-          QueueUrl: "https://sqs.us-east-1.amazonaws.com/292328237082/scrape-replies"
+          QueueUrl: scrapeReplies
          };
          sqs.sendMessage(params, function(err, data) {
            if (err) {
-             console.log("Error in refresh-friends", err);
+             console.log("Error in scrape-replies", err);
            } else {
-             console.log("Success in refresh-friends", data.MessageId);
+             console.log("Success in scrape-replies", data.MessageId);
            }
          });
       }
